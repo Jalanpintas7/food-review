@@ -1,31 +1,32 @@
 <script>
-  const trendingArticles = [
-    {
-      id: 1,
-      title: '5D4N Itinerary For Your Next Budget-Friendly Trip To Shenzhen',
-      views: '2.5K'
-    },
-    {
-      id: 2,
-      title: '31 BEST Cafes You Must Visit In Kelantan (2025 Edition)',
-      views: '1.8K'
-    },
-    {
-      id: 3,
-      title: '15 Popular Breakfast Spots In Kelantan To Start Your Day (2025 Edition)',
-      views: '1.2K'
-    },
-    {
-      id: 4,
-      title: '11 Spots That Captures Hidden Charms Of Kelantan (2025 Guide)',
-      views: '980'
-    },
-    {
-      id: 5,
-      title: 'Top 15 Must-Visit Restaurants In Kelantan (2024 Guide)',
-      views: '750'
-    }
-  ];
+  import { page } from '$app/stores';
+  
+  /** @type {import('./$types').PageData} */
+  export let articles = [];
+  
+  // Menggunakan data dari prop jika tersedia, jika tidak gunakan data dari halaman
+  $: trendingArticles = articles && articles.length > 0 ? 
+    mapArticleData(articles) : 
+    ($page.data.trendingArticles ? mapArticleData($page.data.trendingArticles) : []);
+  
+  // Fungsi untuk memformat data artikel
+  function mapArticleData(articles) {
+    if (!articles || articles.length === 0) return [];
+    
+    return articles.map((article) => {
+      // Menggunakan visit_count dari database
+      const viewCount = article.visit_count || 0;
+      const formattedViews = viewCount > 1000 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount.toString();
+      
+      return {
+        id: article.id,
+        title: article.title,
+        views: formattedViews
+      };
+    });
+  }
+  
+    // Data statis telah dihapus dan diganti dengan data dinamis dari database
 </script>
 
 <div class="space-y-8">

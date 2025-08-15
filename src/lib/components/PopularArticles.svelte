@@ -1,5 +1,8 @@
 <script>
   import { fly } from 'svelte/transition';
+  import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  
   // State untuk "Read more"
   const articlesPerLoad = 12;
   let visibleCount = articlesPerLoad;
@@ -8,225 +11,45 @@
   let prevVisibleCount = visibleCount;
   let lastRemovedStartIndex = 0;
   let lastActionWasLess = false;
-
-  const featuredArticles = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'Nasi Lemak Terbaik di Kelantan - 10 Tempat Wajib Coba',
-      author: 'BY OMNY',
-      excerpt: 'Discover the best Nasi Lemak spots in Kelantan with our comprehensive guide to 10 must-try locations.',
-      height: 'tall'
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'Char Kway Teow Legendaris - Warisan Kuliner Kelantan',
-      author: 'BY OMNY',
-      excerpt: 'Explore the legendary Char Kway Teow of Kelantan, a culinary heritage passed down through generations.',
-      height: 'medium'
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1563379091339-03246963d4a9?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'Mee Goreng Mamak - Resep Rahasia yang Bikin Ketagihan',
-      author: 'BY OMNY',
-      excerpt: 'Discover the secret recipes behind the addictive Mee Goreng Mamak that keeps people coming back.',
-      height: 'short'
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
-      category: 'RECIPE',
-      title: 'Traditional Indonesian Cuisine: A Culinary Journey',
-      author: 'BY SARAH',
-      excerpt: 'Explore the rich flavors and traditional cooking methods of Indonesian cuisine.',
-      height: 'tall'
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1504674900240-9a9049b7d8ce?w=400&h=300&fit=crop',
-      category: 'CAFE',
-      title: 'Best Coffee Shops in Jakarta: A Complete Guide',
-      author: 'BY MIKE',
-      excerpt: 'Discover the hidden gems and popular coffee spots that make Jakarta a coffee lover\'s paradise.',
-      height: 'medium'
-    },
-    {
-      id: 6,
-      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=300&fit=crop',
-      category: 'RESTAURANT',
-      title: 'Fine Dining Experience: Top Restaurants in Indonesia',
-      author: 'BY LISA',
-      excerpt: 'Experience the best of Indonesian fine dining with our curated list of top restaurants.',
-      height: 'short'
-    },
-    {
-      id: 7,
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
-      category: 'STREET FOOD',
-      title: 'Street Food Adventures: Must-Try Local Delicacies',
-      author: 'BY ALEX',
-      excerpt: 'Embark on a culinary adventure through Indonesia\'s vibrant street food scene.',
-      height: 'tall'
-    },
-    {
-      id: 8,
-      image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'Healthy Eating: Modern Indonesian Diet Trends',
-      author: 'BY EMMA',
-      excerpt: 'Learn about the latest health-conscious eating trends in Indonesian cuisine.',
-      height: 'medium'
-    },
-    {
-      id: 9,
-      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-      category: 'RECIPE',
-      title: 'Quick and Easy Indonesian Recipes for Beginners',
-      author: 'BY DAVID',
-      excerpt: 'Master the basics of Indonesian cooking with these simple and delicious recipes.',
-      height: 'short'
-    },
-    {
-      id: 10,
-      image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop',
-      category: 'RESTAURANT',
-      title: 'Hidden Gems: Underrated Eateries You Must Try',
-      author: 'BY NINA',
-      excerpt: 'A curated list of lesser-known restaurants serving unforgettable dishes.',
-      height: 'tall'
-    },
-    {
-      id: 11,
-      image: 'https://images.unsplash.com/photo-1447078806655-40579c2520d6?w=400&h=300&fit=crop',
-      category: 'DESSERT',
-      title: 'Sweet Escape: Best Desserts Around the City',
-      author: 'BY ALEX',
-      excerpt: 'From classic cakes to modern confections, satisfy your sweet tooth.',
-      height: 'medium'
-    },
-    {
-      id: 12,
-      image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=400&h=300&fit=crop',
-      category: 'HEALTH',
-      title: 'Plant-Based Power: Tasty Vegan Dishes to Try',
-      author: 'BY EMMA',
-      excerpt: 'Delicious vegan meals that are as healthy as they are flavorful.',
-      height: 'short'
-    },
-    {
-      id: 13,
-      image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?w=400&h=300&fit=crop',
-      category: 'DRINKS',
-      title: 'Signature Drinks: Mixology Trends This Year',
-      author: 'BY LEO',
-      excerpt: 'A look at creative cocktails and non-alcoholic options taking the scene.',
-      height: 'tall'
-    },
-    {
-      id: 14,
-      image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=300&fit=crop',
-      category: 'STREET FOOD',
-      title: 'Night Market Bites: Street Food After Dark',
-      author: 'BY DANY',
-      excerpt: 'The best late-night snacks and the stories behind them.',
-      height: 'medium'
-    },
-    {
-      id: 15,
-      image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-      category: 'RECIPE',
-      title: 'One-Pot Wonders: Easy Meals with Minimal Cleanup',
-      author: 'BY SARAH',
-      excerpt: 'Save time in the kitchen with these comforting, simple dishes.',
-      height: 'short'
-    },
-    {
-      id: 16,
-      image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'From Farm to Table: Fresh Ingredients Spotlight',
-      author: 'BY LISA',
-      excerpt: 'Why seasonal produce matters and where to find the best picks.',
-      height: 'tall'
-    },
-    {
-      id: 17,
-      image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop',
-      category: 'CAFE',
-      title: 'Third-Wave Coffee: What Makes It Different?',
-      author: 'BY MIKE',
-      excerpt: 'Understanding roasting profiles, brewing methods, and tasting notes.',
-      height: 'medium'
-    },
-    {
-      id: 18,
-      image: 'https://images.unsplash.com/photo-1484980972926-edee96e0960d?w=400&h=300&fit=crop',
-      category: 'RESTAURANT',
-      title: 'Chef\'s Table: Interviews with Local Chefs',
-      author: 'BY LEO',
-      excerpt: 'Culinary philosophies and inspirations behind iconic menus.',
-      height: 'short'
-    },
-    {
-      id: 19,
-      image: 'https://images.unsplash.com/photo-1504674900240-9a9049b7d8ce?w=400&h=300&fit=crop',
-      category: 'FOOD',
-      title: 'Budget Bites: Great Meals Without Breaking the Bank',
-      author: 'BY ALEX',
-      excerpt: 'Affordable spots serving delicious food with generous portions.',
-      height: 'tall'
-    },
-    {
-      id: 20,
-      image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&h=300&fit=crop',
-      category: 'TRAVEL',
-      title: 'Culinary Road Trip: Flavors Across the Archipelago',
-      author: 'BY DAVID',
-      excerpt: 'A journey through regional specialties and local delicacies.',
-      height: 'medium'
-    },
-    {
-      id: 21,
-      image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400&h=300&fit=crop',
-      category: 'HEALTH',
-      title: 'Balanced Bowls: Nutritious and Delicious',
-      author: 'BY EMMA',
-      excerpt: 'How to build a balanced bowl with proteins, grains, and greens.',
-      height: 'short'
-    },
-    {
-      id: 22,
-      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
-      category: 'RECIPE',
-      title: 'Meal Prep 101: Save Time, Eat Better',
-      author: 'BY SARAH',
-      excerpt: 'Tips and recipes to streamline your weeknight cooking.',
-      height: 'tall'
-    },
-    {
-      id: 23,
-      image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?w=400&h=300&fit=crop',
-      category: 'DRINKS',
-      title: 'Tea Culture: Brewing the Perfect Cup',
-      author: 'BY NINA',
-      excerpt: 'Exploring varieties, temperatures, and steep times for better tea.',
-      height: 'medium'
-    },
-    {
-      id: 24,
-      image: 'https://images.unsplash.com/photo-1506086679524-493c64fdfaa6?w=400&h=300&fit=crop',
-      category: 'STREET FOOD',
-      title: 'Festival Foods: Limited-Time Treats You Can\'t Miss',
-      author: 'BY DANY',
-      excerpt: 'Seasonal bites that appear during special celebrations and fairs.',
-      height: 'short'
-    }
-  ];
+  
+  /** @type {import('./$types').PageData} */
+  export let articles = [];
+  
+  // Menggunakan data dari prop jika tersedia, jika tidak gunakan data dari halaman
+  $: featuredArticles = articles && articles.length > 0 ? 
+    mapArticleData(articles) : 
+    ($page.data.popularArticles ? mapArticleData($page.data.popularArticles) : []);
+  
+  // Fungsi untuk memformat data artikel
+  function mapArticleData(articles) {
+    if (!articles || articles.length === 0) return [];
+    
+    // Mengurutkan artikel berdasarkan visit_count dari yang terbanyak
+    const sortedArticles = [...articles].sort((a, b) => (b.visit_count || 0) - (a.visit_count || 0));
+    
+    return sortedArticles.map((article, index) => {
+      // Menentukan height berdasarkan posisi
+      const heightOptions = ['tall', 'medium', 'short'];
+      const height = heightOptions[index % 3];
+      
+      // Menggunakan visit_count dari database
+      const viewCount = article.visit_count || 0;
+      const formattedViews = viewCount > 1000 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount.toString();
+      
+      return {
+        id: article.id,
+        image: article.thumbnail_image || 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop',
+        category: article.category.toUpperCase(),
+        title: article.title,
+        author: article.author ? `BY ${article.author.toUpperCase()}` : 'BY ADMIN',
+        excerpt: article.summary,
+        height: height,
+        views: formattedViews
+      };
+    });
+  }
+  
+    // Data statis telah dihapus dan diganti dengan data dinamis dari database
 
   // Artikel yang terlihat saat ini
   $: visibleArticles = featuredArticles.slice(0, visibleCount);
@@ -419,10 +242,19 @@
                   {/if}
                   
                   <div class="flex items-center justify-between">
-                    <span class="text-xs text-gray-300 font-medium">
-                      {article.author}
-                    </span>
-                    <a href={`/article/${article.id}`} class="text-white text-xs font-semibold hover:text-red-300 transition-colors duration-300 flex items-center gap-1 group/btn">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs text-gray-300 font-medium">
+                        {article.author}
+                      </span>
+                      <span class="text-xs text-gray-300 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        {article.views} views
+                      </span>
+                    </div>
+                    <a href={`/${$page.params.slug}/article/${article.id}`} class="text-white text-xs font-semibold hover:text-red-300 transition-colors duration-300 flex items-center gap-1 group/btn">
                       Baca Selengkapnya
                       <svg class="w-3 h-3 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

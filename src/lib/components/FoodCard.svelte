@@ -8,13 +8,15 @@
     author: '',
     date: ''
   };
+
+  export let websiteSlug = '';
 </script>
 
 <article class="bg-gradient-to-br from-white to-red-50 rounded-2xl shadow-xl border border-red-100 overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 transform h-full flex flex-col">
   <div class="flex flex-col md:flex-row h-full flex-1">
     <!-- Image -->
     <div class="md:w-1/3 relative group flex-shrink-0 h-48 md:h-full">
-      <a href="/article/{article.id}" class="block h-full">
+      <a href="/{websiteSlug}/article/{article.id}" class="block h-full">
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
         <img 
           src={article.image} 
@@ -46,7 +48,7 @@
       </div>
       
       <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-red-600 bg-clip-text text-transparent mb-4 hover:text-red-600 transition-colors flex items-start">
-        <a href="/article/{article.id}" class="block line-clamp-2">
+        <a href="/{websiteSlug}/article/{article.id}" class="block line-clamp-2">
           {article.title}
         </a>
       </h2>
@@ -59,7 +61,7 @@
       
       <div class="mt-6 flex-shrink-0">
         <a 
-          href="/article/{article.id}" 
+          href="/{websiteSlug}/article/{article.id}" 
           class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >
           <span>BACA SELENGKAPNYA</span>

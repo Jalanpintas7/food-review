@@ -1,24 +1,20 @@
 <script>
-  import Header from '$lib/components/Header.svelte';
-  import NavigationMenu from '$lib/components/NavigationMenu.svelte';
   import FeaturedArticles from '$lib/components/PopularArticles.svelte';
   import CategoryShowcase from '$lib/components/RandomArticle.svelte';
   import RecentPost from '$lib/components/RecentPost.svelte';
   import TrendingSidebar from '$lib/components/Sidebar.svelte';
-  import Footer from '$lib/components/Footer.svelte';
   import PageHeader from '$lib/components/PageHeader.svelte';
+
+  /** @type {import('./$types').PageData} */
+  export let data;
 </script>
 
 <svelte:head>
-  <title>Kelantan Food - Your Ultimate Food Review Guide</title>
+  <title>{data.website.name} - Your Ultimate Food Review Guide</title>
   <meta name="description" content="Discover the best restaurants, cafes, and culinary experiences in Kelantan. Your ultimate guide to food reviews, recipes, and dining adventures." />
 </svelte:head>
 
-<Header />
-<NavigationMenu />
-
 <main class="bg-gradient-to-br from-gray-50 via-white to-red-50">
- 
   <!-- Featured Articles Section -->
   <PageHeader 
     title="Artikel Terpopuler"
@@ -29,7 +25,7 @@
   <!-- Popular Articles -->
   <section class="py-16 bg-white">
     <div class="container mx-auto px-4">
-      <FeaturedArticles />
+      <FeaturedArticles articles={data.popularArticles} />
     </div>
   </section>
   
@@ -52,7 +48,7 @@
           Jelajahi berbagai kategori kuliner yang kami sajikan untuk Anda
         </p>
       </div>
-      <CategoryShowcase />
+      <CategoryShowcase articles={data.randomArticles} />
     </div>
   </section>
   
@@ -72,7 +68,7 @@
         </h2>
         <div class="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto rounded-full mb-6"></div>
         <p class="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-          Artikel dan review terbaru dari tim Kelantan Food Review
+          Artikel dan review terbaru dari tim {data.website.name}
         </p>
       </div>
       
@@ -80,14 +76,14 @@
         <!-- Main Content -->
         <div class="lg:col-span-2">
           <div class="bg-gradient-to-br from-white to-red-50 p-8 rounded-2xl shadow-xl border border-red-100 transform hover:scale-105 transition-all duration-300">
-            <RecentPost />
+            <RecentPost articles={data.latestArticles} />
           </div>
         </div>
         
         <!-- Sidebar -->
         <div class="lg:col-span-1">
           <div class="bg-gradient-to-br from-white to-orange-50 p-8 rounded-2xl shadow-xl border border-orange-100 transform hover:scale-105 transition-all duration-300">
-            <TrendingSidebar />
+            <TrendingSidebar articles={data.trendingArticles} />
           </div>
         </div>
       </div>
@@ -114,10 +110,10 @@
           Bergabunglah dengan ribuan pecinta kuliner lainnya!
         </p>
         <div class="flex flex-wrap justify-center gap-4">
-          <a href="/about" class="bg-white hover:bg-gray-100 text-red-600 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+          <a href="/{data.website.slug}/about" class="bg-white hover:bg-gray-100 text-red-600 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
             Pelajari Lebih Lanjut
           </a>
-          <a href="/contact" class="bg-transparent hover:bg-white/10 text-white font-bold py-4 px-8 rounded-xl border-2 border-white hover:border-white/80 transition-all duration-300 transform hover:scale-105">
+          <a href="/{data.website.slug}/contact" class="bg-transparent hover:bg-white/10 text-white font-bold py-4 px-8 rounded-xl border-2 border-white hover:border-white/80 transition-all duration-300 transform hover:scale-105">
             Hubungi Kami
           </a>
         </div>
@@ -125,5 +121,3 @@
     </div>
   </section>
 </main>
-
-<Footer />

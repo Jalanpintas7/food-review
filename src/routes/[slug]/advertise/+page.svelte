@@ -1,0 +1,164 @@
+<script>
+  import { onMount } from 'svelte';
+  import PageHeader from '$lib/components/PageHeader.svelte';
+  import { supabase } from '$lib/supabase.js';
+
+  /** @type {import('./$types').PageData} */
+  export let data;
+
+  let advertiseData = {};
+
+  onMount(async () => {
+    // Fetch Advertise page content
+    const { data: advertiseContent, error } = await supabase
+      .from('advertise')
+      .select('*')
+      .eq('website_id', data.website.id)
+      .single();
+    if (error) console.error('Error fetching advertise content:', error);
+    else advertiseData = advertiseContent || {};
+  });
+
+  // Map icon names to SVG paths
+  const iconSvgs = {
+    'tiktok': '<path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>',
+    'facebook': '<path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>',
+    'instagram': '<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>',
+    'twitter': '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>',
+    'threads': '<path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>',
+    'phone': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>',
+    'email': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>',
+    'location': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>'
+  };
+</script>
+
+<svelte:head>
+  <title>{advertiseData.page_title || 'Advertise'} - {data.website.name}</title>
+  <meta
+    name="description"
+    content={advertiseData.page_description || 'Promosikan bisnis kuliner Anda dengan paket video promosi di berbagai platform sosial media.'}
+  />
+</svelte:head>
+
+<main class="bg-gradient-to-br from-gray-50 via-white to-red-50">
+  <!-- Page Header -->
+  {#if advertiseData.page_title}
+    <PageHeader 
+      title={advertiseData.page_title}
+      description={advertiseData.page_description}
+    />
+  {/if}
+
+  <!-- Main Content -->
+  <section class="py-16 bg-gradient-to-br from-red-50 to-orange-50">
+    <div class="container mx-auto px-4">
+      <!-- Introduction -->
+      {#if advertiseData.introduction}
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-red-600 bg-clip-text text-transparent mb-4">
+            {advertiseData.introduction.title}
+          </h2>
+          <div class="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto rounded-full mb-6"></div>
+          <p class="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
+            {advertiseData.introduction.content}
+          </p>
+        </div>
+      {/if}
+
+      <!-- Pricing Packages -->
+      {#if advertiseData.packages}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+          {#each (advertiseData.packages || []).sort((a, b) => a.order_index - b.order_index) as pkg}
+            <div class="bg-gradient-to-br from-white to-{pkg.order_index % 2 === 0 ? 'red-50' : 'orange-50'} p-8 rounded-2xl shadow-xl border border-{pkg.order_index % 2 === 0 ? 'red-100' : 'orange-100'} transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-{pkg.order_index % 2 === 0 ? 'red-600/10' : 'orange-600/10'} to-{pkg.order_index % 2 === 0 ? 'orange-500/10' : 'red-500/10'} rounded-full -translate-y-16 translate-x-16"></div>
+              {#if pkg.label}
+                <div class="absolute top-4 right-4 bg-gradient-to-r from-{pkg.order_index % 2 === 0 ? 'red-500' : 'orange-500'} to-{pkg.order_index % 2 === 0 ? 'orange-500' : 'red-500'} text-white text-xs font-bold px-3 py-1 rounded-full">
+                  {pkg.label}
+                </div>
+              {/if}
+              <div class="relative z-10">
+                <div class="text-center mb-8">
+                  <h3 class="text-2xl font-bold text-gray-800 mb-4">{pkg.name}</h3>
+                  <div class="w-16 h-1 bg-gradient-to-r from-{pkg.order_index % 2 === 0 ? 'red-600' : 'orange-500'} to-{pkg.order_index % 2 === 0 ? 'orange-500' : 'red-600'} mx-auto rounded-full mb-6"></div>
+                  <div class="mb-6">
+                    <span class="text-4xl font-black bg-gradient-to-r from-{pkg.order_index % 2 === 0 ? 'red-600' : 'orange-600'} to-{pkg.order_index % 2 === 0 ? 'red-700' : 'red-600'} bg-clip-text text-transparent">{pkg.price}</span>
+                  </div>
+                </div>
+                <div class="space-y-4 mb-8">
+                  <h4 class="font-bold text-gray-800 mb-4">Video promosi di:</h4>
+                  <div class="space-y-3">
+                    {#each pkg.platforms as platform}
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-{platform.icon_name === 'facebook' ? 'blue-600' : platform.icon_name === 'instagram' ? 'pink-600' : platform.icon_name === 'twitter' || platform.icon_name === 'threads' ? 'gray-800' : 'red-600'} to-{platform.icon_name === 'facebook' ? 'blue-700' : platform.icon_name === 'instagram' ? 'purple-600' : platform.icon_name === 'twitter' || platform.icon_name === 'threads' ? 'gray-900' : 'red-700'} rounded-lg flex items-center justify-center">
+                          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            {@html iconSvgs[platform.icon_name]}
+                          </svg>
+                        </div>
+                        <span class="text-gray-700 font-medium">{platform.name}</span>
+                      </div>
+                    {/each}
+                  </div>
+                </div>
+                <button class="w-full bg-gradient-to-r from-{pkg.order_index % 2 === 0 ? 'red-600' : 'orange-600'} to-{pkg.order_index % 2 === 0 ? 'red-700' : 'red-600'} text-white font-bold py-3 px-6 rounded-xl hover:from-{pkg.order_index % 2 === 0 ? 'red-700' : 'orange-700'} hover:to-{pkg.order_index % 2 === 0 ? 'red-800' : 'red-700'} transform hover:scale-105 transition-all duration-300 shadow-lg">
+                  Pilih Pakej
+                </button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+      <!-- Contact Section -->
+      {#if advertiseData.contact_info}
+        <div class="bg-gradient-to-br from-white to-gray-50 p-10 rounded-3xl shadow-2xl border border-gray-100 mb-20">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-red-600 bg-clip-text text-transparent mb-4">
+              {advertiseData.contact_info.title}
+            </h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto rounded-full mb-6"></div>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+              {advertiseData.contact_info.description}
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-6">
+              {#each (advertiseData.contact_info.items || []) as item}
+                <div class="flex items-center space-x-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-{item.icon_name === 'email' ? 'orange-600' : 'red-600'} to-{item.icon_name === 'email' ? 'red-600' : 'red-700'} rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {@html iconSvgs[item.icon_name]}
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-800">{item.type}</h3>
+                    <p class="text-gray-600">{item.value}</p>
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <div class="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-2xl border border-red-100">
+              <h3 class="text-2xl font-bold text-gray-800 mb-6">{advertiseData.contact_info.form.title}</h3>
+              <form class="space-y-4">
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Nama</label>
+                  <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan nama Anda">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Email</label>
+                  <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan email Anda">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Pesan</label>
+                  <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Tulis pesan Anda di sini..."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-3 px-6 rounded-xl hover:from-red-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                  Kirim Pesan
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {/if}
+    </div>
+  </section>
+</main>

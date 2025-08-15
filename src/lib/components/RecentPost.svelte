@@ -1,52 +1,46 @@
 <script>
+  import { page } from '$app/stores';
   
-  const latestArticles = [
-    {
-      id: 1,
-      title: '5D4N Itinerary For Your Next Budget-Friendly Trip To Shenzhen',
-      category: 'Travel',
-      author: 'Jessica Lim',
-      date: '4 Agustus 2025',
-      excerpt: 'Complete travel guide for an affordable adventure in Shenzhen',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center'
-    },
-    {
-      id: 2,
-      title: 'MSME Digital Grant 2025 Is Back…',
-      category: 'News',
-      author: 'Thexeilia Yeap',
-      date: '17 Juli 2025',
-      excerpt: 'Latest updates on digital grants for small businesses',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=200&fit=crop&crop=center'
-    },
-    {
-      id: 3,
-      title: '5 Must-Visit Spots For Creamy Durians In Kelantan (2025 Edition)',
-      category: 'Food',
-      author: 'Thexeilia Yeap',
-      date: '1 Juli 2025',
-      excerpt: 'Discover the best durian spots in Kelantan this year',
-      image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=200&fit=crop&crop=center'
-    },
-    {
-      id: 4,
-      title: '31 BEST Cafes You Must Visit In Kelantan (2025 Edition)',
-      category: 'Cafe',
-      author: 'Dany',
-      date: '28 Juni 2025',
-      excerpt: 'Comprehensive guide to the top cafes in Kelantan',
-      image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=300&h=200&fit=crop&crop=center'
-    },
-    {
-      id: 5,
-      title: '15 Popular Breakfast Spots In Kelantan To Start Your Day (2025 Edition)',
-      category: 'Food',
-      author: 'Dany',
-      date: '25 Juni 2025',
-      excerpt: 'Start your day right with these amazing breakfast locations',
-      image: 'https://images.unsplash.com/photo-1494859802809-d069c3b71a8a?w=300&h=200&fit=crop&crop=center'
-    }
-  ];
+  /** @type {import('./$types').PageData} */
+  export let articles = [];
+  
+  // Menggunakan data dari prop jika tersedia, jika tidak gunakan data dari halaman
+  $: latestArticles = articles && articles.length > 0 ? 
+    mapArticleData(articles) : 
+    ($page.data.latestArticles ? mapArticleData($page.data.latestArticles) : []);
+  
+  // Fungsi untuk memformat data artikel
+  function mapArticleData(articles) {
+    if (!articles || articles.length === 0) return [];
+    
+    return articles.map((article) => {
+      // Menggunakan visit_count dari database
+      const viewCount = article.visit_count || 0;
+      const formattedViews = viewCount > 1000 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount.toString();
+      
+      return {
+        id: article.id,
+        title: article.title,
+        category: article.category,
+        author: article.author || 'Admin',
+        date: formatDate(article.published_at),
+        excerpt: article.summary,
+        image: article.thumbnail_image || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center',
+        views: formattedViews
+      };
+    });
+  }
+  
+  // Fungsi untuk memformat tanggal
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('id-ID', options);
+  }
+  
+    // Data statis telah dihapus dan diganti dengan data dinamis dari database
 </script>
 
 <div class="space-y-6">
@@ -79,9 +73,18 @@
           </p>
         {/if}
         <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-500 font-medium">
-            {article.author}
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-500 font-medium">
+              {article.author}
+            </span>
+            <span class="text-xs text-gray-500 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              {article.views} views
+            </span>
+          </div>
           <button class="text-red-600 text-xs font-semibold hover:text-red-700 transition-colors">
             Baca Selengkapnya
           </button>
