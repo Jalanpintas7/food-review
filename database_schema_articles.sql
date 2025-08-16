@@ -73,6 +73,38 @@ CREATE TRIGGER update_articles_updated_at
   FOR EACH ROW 
   EXECUTE FUNCTION update_updated_at_column();
 
+-- Table: comments (Komentar artikel)
+CREATE TABLE comments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id UUID NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+  author_name VARCHAR(100) NOT NULL,
+  content TEXT NOT NULL,
+  is_approved BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes untuk comments
+CREATE INDEX idx_comments_article_id ON comments(article_id);
+CREATE INDEX idx_comments_article_created_at ON comments(article_id, created_at DESC);
+
+-- Enable Row Level Security (RLS) untuk comments
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+
+-- Policy: publik bisa baca komentar yang disetujui
+CREATE POLICY "Allow public read approved comments" 
+  ON comments 
+  FOR SELECT 
+  USING (is_approved = true);
+
+-- Policy: anon bisa menambah komentar
+CREATE POLICY "Allow anon insert comments" 
+  ON comments 
+  FOR INSERT 
+  WITH CHECK (
+    -- Minimal validasi sederhana agar tidak kosong
+    char_length(trim(content)) > 0 AND char_length(trim(author_name)) > 0
+  );
+
 -- Sample data untuk articles
 INSERT INTO articles (website_id, title, slug, author, minute_read, category, thumbnail_image, main_image, summary, content, visit_count, is_published, published_at) VALUES
 (1, 'Nasi Kerabu: Hidangan Ikonik Kelantan', 'nasi-kerabu-hidangan-ikonik-kelantan', 'Sarah Chen', 8, 'food', 

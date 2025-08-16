@@ -110,25 +110,26 @@
     title="Artikel Makanan"
     description="Temukan artikel terbaik tentang makanan lokal Kelantan dan review restoran terpercaya"
     icon="book"
+    compact={true}
   />
   
   <!-- Main Content Area -->
-  <section class="py-16 bg-gradient-to-br from-red-50 to-orange-50" id="articles">
+  <section class="py-8 md:py-10 bg-gradient-to-br from-red-50 to-orange-50" id="articles">
     <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2">
           <!-- Articles List -->
-          <div class="grid grid-cols-1 gap-8" bind:this={articlesContainer}>
+          <div class="grid grid-cols-1 gap-5 md:gap-6" bind:this={articlesContainer}>
             {#each articles as article}
               <FoodCard {article} websiteSlug={websiteSlug} />
             {/each}
           </div>
           
           <!-- Load More Button -->
-          <div class="text-center mt-12">
+          <div class="text-center mt-8 md:mt-10">
             <button 
-              class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow"
               on:click={loadMoreArticles}
               disabled={loading}
             >
@@ -147,7 +148,7 @@
         </div>
         
         <!-- Sidebar -->
-        <div class="lg:col-span-1 space-y-8">
+        <div class="lg:col-span-1 space-y-6 md:space-y-8">
           <!-- About Food Section -->
           <AboutKelantanCard 
             title="Tentang Kuliner Kelantan"

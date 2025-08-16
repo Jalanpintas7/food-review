@@ -6,13 +6,14 @@
   export let iconBgColor = "from-red-600 to-red-700";
   export let titleGradient = "from-gray-800 to-red-600";
   export let lineGradient = "from-red-600 to-orange-500";
+  export let compact = false;
 </script>
 
-<section class="pt-16">
+<section class={compact ? "pt-6" : "pt-16"}>
   <div class="container mx-auto px-4">
-    <div class="text-center mb-10">
-      <div class="inline-block p-2 bg-gradient-to-r {bgColor} rounded-full mb-6">
-        <div class="w-16 h-16 bg-gradient-to-br {iconBgColor} rounded-full flex items-center justify-center mx-auto">
+    <div class={compact ? "text-center mb-6" : "text-center mb-10"}>
+      <div class={compact ? `inline-block p-1.5 bg-gradient-to-r ${bgColor} rounded-full mb-4` : `inline-block p-2 bg-gradient-to-r ${bgColor} rounded-full mb-6`}>
+        <div class={compact ? `w-12 h-12 bg-gradient-to-br ${iconBgColor} rounded-full flex items-center justify-center mx-auto` : `w-16 h-16 bg-gradient-to-br ${iconBgColor} rounded-full flex items-center justify-center mx-auto`}>
           {#if icon === "book"}
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
@@ -46,11 +47,11 @@
           {/if}
         </div>
       </div>
-      <h1 class="text-5xl font-bold bg-gradient-to-r {titleGradient} bg-clip-text text-transparent mb-4">
+      <h1 class={compact ? `text-3xl font-bold bg-gradient-to-r ${titleGradient} bg-clip-text text-transparent mb-3` : `text-5xl font-bold bg-gradient-to-r ${titleGradient} bg-clip-text text-transparent mb-4`}>
         {title}
       </h1>
-      <div class="w-32 h-1 bg-gradient-to-r {lineGradient} mx-auto rounded-full mb-6"></div>
-      <p class="text-gray-600 max-w-6xl mx-auto text-lg leading-relaxed">
+      <div class={compact ? `w-20 h-1 bg-gradient-to-r ${lineGradient} mx-auto rounded-full mb-4` : `w-32 h-1 bg-gradient-to-r ${lineGradient} mx-auto rounded-full mb-6`}></div>
+      <p class={compact ? "text-gray-600 max-w-3xl mx-auto text-base leading-relaxed" : "text-gray-600 max-w-6xl mx-auto text-lg leading-relaxed"}>
         {description}
       </p>
     </div>

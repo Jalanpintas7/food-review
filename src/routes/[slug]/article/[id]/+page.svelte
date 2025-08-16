@@ -3,6 +3,7 @@
   import NavigationMenu from '$lib/components/NavigationMenu.svelte';
   import TrendingSidebar from '$lib/components/Sidebar.svelte';
   import Footer from '$lib/components/Footer.svelte';
+  import { addComment, getCommentsByArticle } from '$lib/comments';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -11,6 +12,13 @@
   const article = data.article;
   // Artikel terkait
   const relatedArticles = data.relatedArticles;
+  // Komentar awal dari load
+  let comments = data.comments || [];
+  let commenterName = '';
+  let commentContent = '';
+  let isSubmitting = false;
+  let submitError = '';
+  let submitSuccess = '';
   
   // Format tanggal dari ISO string ke format yang diinginkan
   function formatDate(isoString) {
@@ -69,6 +77,41 @@
       }
     }).join('');
   }
+
+  async function refreshComments() {
+    comments = await getCommentsByArticle(article.id);
+  }
+
+  async function handleSubmitComment(event) {
+    event.preventDefault();
+    submitError = '';
+    submitSuccess = '';
+
+    const name = commenterName?.trim();
+    const content = commentContent?.trim();
+    if (!name || !content) {
+      submitError = 'Nama dan komentar wajib diisi.';
+      return;
+    }
+    if (content.length > 1000) {
+      submitError = 'Komentar terlalu panjang (maksimal 1000 karakter).';
+      return;
+    }
+
+    isSubmitting = true;
+    const ok = await addComment(article.id, name, content);
+    isSubmitting = false;
+
+    if (!ok) {
+      submitError = 'Gagal mengirim komentar. Coba lagi.';
+      return;
+    }
+
+    commenterName = '';
+    commentContent = '';
+    submitSuccess = 'Komentar terkirim!';
+    await refreshComments();
+  }
 </script>
 
 <svelte:head>
@@ -80,10 +123,10 @@
 
 <main class="bg-gray-50 min-h-screen">
   {#if article}
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6">
-        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-gray-600">
           <li><a href="/" class="hover:text-primary-500 transition-colors">Home</a></li>
           <li class="text-gray-400">/</li>
           <li>
@@ -96,20 +139,20 @@
         </ol>
       </nav>
       
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2">
-          <article class="bg-white rounded-lg shadow-sm p-8">
+          <article class="bg-white rounded-none shadow-none p-4 sm:rounded-lg sm:shadow-sm sm:p-6 lg:p-8">
             <!-- Article Header -->
             <header class="mb-8">
-              <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4 leading-tight">
+              <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 leading-tight">
                 {article.title}
               </h1>
               
               <!-- Social Share Icons -->
-              <div class="flex items-center space-x-4 mb-4">
+              <div class="flex flex-wrap items-center gap-3 sm:gap-4 mb-4">
                 <button 
-                  class="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                  class="w-9 h-9 sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
                   aria-label="Share on Twitter"
                 >
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -117,7 +160,7 @@
                   </svg>
                 </button>
                 <button 
-                  class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors"
+                  class="w-9 h-9 sm:w-10 sm:h-10 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors"
                   aria-label="Share on Pinterest"
                 >
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -125,7 +168,7 @@
                   </svg>
                 </button>
                 <button 
-                  class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors"
+                  class="w-9 h-9 sm:w-10 sm:h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors"
                   aria-label="Share on Telegram"
                 >
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -133,7 +176,7 @@
                   </svg>
                 </button>
                 <button 
-                  class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors"
+                  class="w-9 h-9 sm:w-10 sm:h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors"
                   aria-label="Share on Instagram"
                 >
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -143,60 +186,60 @@
               </div>
               
               <!-- Article Meta -->
-              <div class="flex items-center space-x-4 text-sm text-gray-600">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-gray-600">
                 <span class="font-medium">BY {article.author}</span>
-                <span class="text-gray-400">•</span>
+                <span class="text-gray-400 hidden sm:inline">•</span>
                 <span>{formatDate(article.published_at)}</span>
-                <span class="text-gray-400">•</span>
+                <span class="text-gray-400 hidden sm:inline">•</span>
                 <span class="tag">{formatCategory(article.category)}</span>
-                <span class="text-gray-400">•</span>
+                <span class="text-gray-400 hidden sm:inline">•</span>
                 <span>{article.minute_read} min read</span>
               </div>
             </header>
 
             <!-- Main Image -->
-            <div class="mb-8">
+            <div class="mb-6 sm:mb-8">
               <img 
                 src={validateImageUrl(article.main_image)}
                 alt={article.title}
-                class="w-full h-96 object-cover rounded-lg shadow-md"
+                class="w-full h-56 sm:h-72 md:h-80 lg:h-96 object-cover rounded-lg shadow-md"
                 on:error={(e) => e.target.src = 'https://via.placeholder.com/800x500'}
               />
             </div>
 
             <!-- Article Content -->
-            <div class="prose prose-lg max-w-none">
+            <div class="prose prose-base sm:prose-lg max-w-none">
               {@html renderContent(article.content)}
               
               <!-- Embedded Image 1 -->
-              <div class="my-8">
+              <div class="my-6 sm:my-8">
                 <img 
                   src={validateImageUrl(article.embeddedImage1)}
                   alt="Food preparation"
-                  class="w-full h-64 object-cover rounded-lg shadow-md"
+                  class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-md"
                   on:error={(e) => e.target.src = 'https://via.placeholder.com/400x300'}
                 />
               </div>
               
               <!-- Placeholder content -->
-              <p class="mb-6 text-lg leading-relaxed">
+              <p class="mb-6 text-base sm:text-lg leading-relaxed">
                 Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, 
                 adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et 
                 dolore magnam aliquam quaerat voluptatem.
               </p>
               
               <!-- Embedded Image 2 -->
-              <div class="my-8">
+              <div class="my-6 sm:my-8">
                 <img 
                   src={validateImageUrl(article.embeddedImage2)}
                   alt="Plated meal"
-                  class="w-full h-64 object-cover rounded-lg shadow-md"
+                  class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-md"
                   on:error={(e) => e.target.src = 'https://via.placeholder.com/400x300'}
                 />
               </div>
               
               <!-- Placeholder content -->
-              <p class="mb-6 text-lg leading-relaxed">
+              <p class="mb-6 text-base sm:text-lg leading-relaxed">
                 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis 
                 praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias 
                 excepturi sint occaecati cupiditate non provident.
@@ -216,6 +259,79 @@
               </a>
             </div>
           </article>
+          
+          <!-- Comments Section -->
+          <section class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Komentar</h2>
+            <!-- Comment List -->
+            {#if comments && comments.length > 0}
+              <ul class="space-y-4 mb-8">
+                {#each comments as c}
+                  <li class="bg-white rounded-lg shadow-sm p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="font-semibold text-gray-800">{c.author_name}</span>
+                      <span class="text-xs text-gray-500">{new Date(c.created_at).toLocaleString()}</span>
+                    </div>
+                    <p class="text-gray-700 whitespace-pre-line">{c.content}</p>
+                  </li>
+                {/each}
+              </ul>
+            {:else}
+              <p class="text-gray-600 mb-8">Belum ada komentar. Jadilah yang pertama berkomentar!</p>
+            {/if}
+
+            <!-- Comment Form -->
+            <form class="bg-white rounded-lg shadow-sm p-6" on:submit|preventDefault={handleSubmitComment}>
+              {#if submitError}
+                <div class="mb-4 text-red-600 text-sm">{submitError}</div>
+              {/if}
+              {#if submitSuccess}
+                <div class="mb-4 text-green-600 text-sm">{submitSuccess}</div>
+              {/if}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label for="commenter-name" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                  <input
+                    type="text"
+                    id="commenter-name"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Nama Anda"
+                    bind:value={commenterName}
+                    maxlength="100"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="comment-content" class="block text-sm font-medium text-gray-700 mb-1">Komentar</label>
+                <textarea
+                  id="comment-content"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  rows="4"
+                  placeholder="Tulis komentar Anda di sini..."
+                  bind:value={commentContent}
+                  maxlength="1000"
+                  required
+                ></textarea>
+              </div>
+              <button
+                class="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-60"
+                type="submit"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                {#if isSubmitting}
+                  <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                  Mengirim...
+                {:else}
+                  Kirim Komentar
+                {/if}
+              </button>
+            </form>
+          </section>
           
           <!-- Related Articles -->
           <section class="mt-12">
