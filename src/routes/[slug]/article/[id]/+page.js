@@ -1,4 +1,5 @@
-import { getArticleById, getRelatedArticles, incrementArticleVisit } from '$lib/articles';
+import { getArticleById, getRelatedArticles, incrementArticleVisit, getArticlesByCategory } from '$lib/articles';
+import { getCommentsByArticle } from '$lib/comments';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, parent }) {
@@ -20,9 +21,15 @@ export async function load({ params, parent }) {
   
   // Ambil artikel terkait berdasarkan kategori
   const relatedArticles = await getRelatedArticles(website.id, article.category, article.id);
+  // Ambil komentar artikel
+  const comments = await getCommentsByArticle(article.id);
+  // Ambil artikel trending untuk sidebar
+  const trendingArticles = await getArticlesByCategory(website.id, null, 5, 0, true);
   
   return {
     article,
-    relatedArticles
+    relatedArticles,
+    comments,
+    trendingArticles
   };
 }

@@ -24,6 +24,7 @@
   let isMobileSidebarOpen = false;
   let isDesktopSidebarOpen = true;
   let hasLoadedStorage = false;
+  let isMobileNavOpen = false;
   
   const setActiveCategory = (href) => {
     activeCategory = href;
@@ -76,7 +77,7 @@
         <!-- Logo -->
         <div class="text-center">
           <h1 class="font-handwriting text-3xl font-bold text-gray-800 hidden md:block">
-            {website.name} <span class="font-sans text-lg font-normal">FOOD Review</span>
+            {website.name}
           </h1>
         </div>
         
@@ -91,7 +92,7 @@
             </a>
             <a href="https://instagram.com/Kelantanfood" aria-label="Follow us on Instagram" class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white hover:from-purple-600 hover:to-pink-600 transition-colors">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
             </a>
             <a href="https://youtube.com/Kelantanfood" aria-label="Follow us on YouTube" class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition-colors">
@@ -116,13 +117,13 @@
       <div class="flex items-center justify-between">
         <!-- Logo and Home -->
         <div class="flex items-center space-x-8">
-          <h2 class="font-handwriting text-2xl font-bold text-gray-800">
+          <h2 class="font-handwriting text-2xl font-bold text-gray-800 md:hidden">
             {website.name}
           </h2>
           
           <a
             href={getWebsiteUrl('/')}
-            class="flex items-center space-x-2 py-4 px-2 transition-colors relative {activeCategory === '/' ? 'text-primary-500' : 'text-gray-600 hover:text-primary-500'}"
+            class="hidden md:flex items-center space-x-2 py-4 px-2 transition-colors relative {activeCategory === '/' ? 'text-primary-500' : 'text-gray-600 hover:text-primary-500'}"
             on:click={() => setActiveCategory('/')}
           >
             <span class="font-medium">Home</span>
@@ -133,7 +134,17 @@
         </div>
         
         <!-- Top Navigation -->
-        <div class="flex items-center space-x-6">
+        <div class="hidden md:flex items-center space-x-6">
+          <a
+            href={getWebsiteUrl('/advertise')}
+            class="flex items-center space-x-2 py-4 px-2 transition-colors relative {activeCategory === '/advertise' ? 'text-primary-500' : 'text-gray-600 hover:text-primary-500'}"
+            on:click={() => setActiveCategory('/advertise')}
+          >
+            <span class="font-medium">Advertise</span>
+            <div 
+              class="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-primary-500 transition-all duration-300 ease-in-out {activeCategory === '/advertise' ? 'w-full' : 'w-0'}"
+            ></div>
+          </a>
           <a
             href={getWebsiteUrl('/about')}
             class="flex items-center space-x-2 py-4 px-2 transition-colors relative {activeCategory === '/about' ? 'text-primary-500' : 'text-gray-600 hover:text-primary-500'}"
@@ -145,16 +156,6 @@
             ></div>
           </a>
           
-          <a
-            href={getWebsiteUrl('/advertise')}
-            class="flex items-center space-x-2 py-4 px-2 transition-colors relative {activeCategory === '/advertise' ? 'text-primary-500' : 'text-gray-600 hover:text-primary-500'}"
-            on:click={() => setActiveCategory('/advertise')}
-          >
-            <span class="font-medium">Advertise</span>
-            <div 
-              class="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-primary-500 transition-all duration-300 ease-in-out {activeCategory === '/advertise' ? 'w-full' : 'w-0'}"
-            ></div>
-          </a>
           
           <a
             href={getWebsiteUrl('/contact')}
@@ -167,21 +168,83 @@
             ></div>
           </a>
         </div>
+
+        <!-- Mobile Hamburger (kanan) -->
+        <div class="md:hidden relative">
+          <button
+            class="inline-flex items-center justify-center w-10 h-10 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none"
+            aria-label={isMobileNavOpen ? 'Tutup menu' : 'Buka menu'}
+            aria-expanded={isMobileNavOpen}
+            on:click={() => (isMobileNavOpen = !isMobileNavOpen)}
+          >
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          {#if isMobileNavOpen}
+            <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+              <a
+                href={getWebsiteUrl('/')}
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                on:click={() => {
+                  setActiveCategory('/');
+                  isMobileNavOpen = false;
+                }}
+              >Home</a>
+              <a
+                href={getWebsiteUrl('/advertise')}
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                on:click={() => {
+                  setActiveCategory('/advertise');
+                  isMobileNavOpen = false;
+                }}
+              >Advertise</a>
+              <a
+                href={getWebsiteUrl('/about')}
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                on:click={() => {
+                  setActiveCategory('/about');
+                  isMobileNavOpen = false;
+                }}
+              >About Us</a>
+              
+              <a
+                href={getWebsiteUrl('/contact')}
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                on:click={() => {
+                  setActiveCategory('/contact');
+                  isMobileNavOpen = false;
+                }}
+              >Contact Us</a>
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
   </nav>
+  {#if isMobileNavOpen}
+    <div
+      class="fixed inset-0 z-40 bg-transparent"
+      role="button"
+      tabindex="0"
+      aria-label="Tutup menu navigasi"
+      on:click={() => (isMobileNavOpen = false)}
+      on:keydown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+          isMobileNavOpen = false;
+        }
+      }}
+    ></div>
+  {/if}
 </header>
 
 <!-- Desktop: Sidebar kategori dengan gambar bulat dan container rounded -->
 {#if isDesktopSidebarOpen}
   <aside class="hidden md:flex fixed left-3 top-1/2 -translate-y-1/2 z-50">
-    <div class="bg-white/80 backdrop-blur-md text-gray-800 rounded-2xl border border-gray-200/60 shadow-xl px-3 py-4 flex flex-col items-center gap-2 relative">
-      <!-- Logo di atas -->
-      <div class="mb-4 text-center">
-        <h2 class="font-handwriting text-lg font-bold text-gray-800">
-          {website.name}
-        </h2>
-      </div>
+    <div class="bg-white/80 backdrop-blur-md text-gray-800 rounded-full border border-gray-200/60 shadow-xl px-3 py-4 flex flex-col items-center gap-2 relative">
       
       <!-- Tombol close di tengah atas container -->
       <button
@@ -231,10 +294,9 @@
     </svg>
   </button>
 {/if}
-
 <!-- Mobile: tombol kecil untuk membuka sidebar kategori -->
 <button
-  class="md:hidden fixed left-2 top-1/2 -translate-y-1/2 z-50 bg-white text-gray-700 w-9 h-9 rounded-full border border-gray-200 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center transition-all duration-200"
+  class="md:hidden fixed left-3 top-1/2 -translate-y-1/2 z-50 bg-white text-gray-700 w-9 h-9 rounded-full border border-gray-200 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center transition-all duration-200"
   on:click={() => (isMobileSidebarOpen = !isMobileSidebarOpen)}
   aria-label={isMobileSidebarOpen ? 'Tutup kategori' : 'Buka kategori'}
   title={isMobileSidebarOpen ? 'Tutup kategori' : 'Buka kategori'}
@@ -256,7 +318,7 @@
 <div class="md:hidden">
   {#if isMobileSidebarOpen}
     <div
-      class="fixed inset-0 bg-black/20 z-40"
+      class="fixed inset-0 bg-transparent z-40"
       role="button"
       tabindex="0"
       aria-label="Tutup panel kategori"
@@ -269,17 +331,15 @@
     ></div>
   {/if}
   <div
-    class="fixed inset-y-0 left-0 z-50 w-16 transform transition-transform duration-300"
+    class="fixed left-3 top-1/2 -translate-y-1/2 z-50 transform transition-all duration-300"
     class:translate-x-0={isMobileSidebarOpen}
-    class:-translate-x-full={!isMobileSidebarOpen}
+    class:-translate-x-6={!isMobileSidebarOpen}
+    class:opacity-100={isMobileSidebarOpen}
+    class:opacity-0={!isMobileSidebarOpen}
+    class:pointer-events-auto={isMobileSidebarOpen}
+    class:pointer-events-none={!isMobileSidebarOpen}
   >
-    <div class="h-full bg-white/90 backdrop-blur-md rounded-r-2xl shadow-xl border border-gray-100 p-2 flex flex-col items-center justify-center gap-2 relative">
-      <!-- Logo di atas mobile -->
-      <div class="mb-4 text-center">
-        <h2 class="font-handwriting text-sm font-bold text-gray-800">
-          {website.name}
-        </h2>
-      </div>
+    <div class="bg-white/90 backdrop-blur-md rounded-full shadow-xl border border-gray-100 p-2 flex flex-col items-center justify-center gap-2 relative">
       
       <!-- Tombol close di tengah atas container mobile -->
       <button

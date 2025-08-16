@@ -32,10 +32,6 @@
       const heightOptions = ['tall', 'medium', 'short'];
       const height = heightOptions[index % 3];
       
-      // Menggunakan visit_count dari database
-      const viewCount = article.visit_count || 0;
-      const formattedViews = viewCount > 1000 ? `${(viewCount / 1000).toFixed(1)}K` : viewCount.toString();
-      
       return {
         id: article.id,
         image: article.thumbnail_image || 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop',
@@ -43,8 +39,7 @@
         title: article.title,
         author: article.author ? `BY ${article.author.toUpperCase()}` : 'BY ADMIN',
         excerpt: article.summary,
-        height: height,
-        views: formattedViews
+        height: height
       };
     });
   }
@@ -179,8 +174,6 @@
 </style>
 
 <div class="relative">
-  <div class="pointer-events-none absolute -left-6 top-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
-  <div class="pointer-events-none absolute -right-6 top-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
   
   <div class="staggered-grid">
     {#each visibleArticles as article, index (article.id)}
@@ -245,13 +238,6 @@
                     <div class="flex items-center gap-2">
                       <span class="text-xs text-gray-300 font-medium">
                         {article.author}
-                      </span>
-                      <span class="text-xs text-gray-300 flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                        {article.views} views
                       </span>
                     </div>
                     <a href={`/${$page.params.slug}/article/${article.id}`} class="text-white text-xs font-semibold hover:text-red-300 transition-colors duration-300 flex items-center gap-1 group/btn">
