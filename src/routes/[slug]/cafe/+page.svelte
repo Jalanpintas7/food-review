@@ -34,7 +34,9 @@
       image: article.thumbnail_image,
       category: article.category,
       slug: article.slug,
-      minute_read: article.minute_read
+      minute_read: article.minute_read,
+      tags: article.tags || [],
+      labels: article.labels || []
     };
   }
   
@@ -153,14 +155,7 @@
         <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-8">
           <!-- About Cafe Section -->
-          <AboutKelantanCard 
-            title="Tentang Cafe Kelantan"
-            description1="Kelantan memiliki scene cafe yang berkembang pesat dengan berbagai pilihan dari coffee shop tradisional hingga modern. Setiap cafe memiliki karakter dan suasana yang unik."
-            description2="Dari teh tarik legendaris hingga specialty coffee, cafe di Kelantan menawarkan pengalaman minum yang beragam dengan cita rasa lokal yang autentik."
-            tipsTitle="Tips Cafe"
-            tipsContent="Kunjungi cafe di pagi hari untuk menghindari keramaian. Cafe lokal biasanya memiliki menu sarapan terbaik dengan harga terjangkau."
-            icon="☕"
-          />
+          <AboutKelantanCard category="cafe" />
         </div>
       </div>
     </div>

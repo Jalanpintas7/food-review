@@ -1,5 +1,6 @@
 <script>
   import { page } from '$app/stores';
+  import { DEFAULT_WEBSITE } from '$lib/tenant';
   
   /** @type {import('./$types').PageData} */
   export let articles = [];
@@ -16,12 +17,15 @@
     return articles.map((article) => {
       return {
         id: article.id,
-        title: article.title
+        title: article.title,
+        category: article.category,
+        image: article.thumbnail_image || 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=80&h=80&fit=crop&crop=center',
+        visitCount: article.visit_count || 0
       };
     });
   }
   
-    // Data statis telah dihapus dan diganti dengan data dinamis dari database
+  // Data statis telah dihapus dan diganti dengan data dinamis dari database
 </script>
 
 <div class="space-y-6 sm:space-y-8">
@@ -66,27 +70,51 @@
   </div>
   
 
-  <!-- Recent Posts -->
+  <!-- Trending This Week -->
   <div class="bg-white sm:bg-gradient-to-br sm:from-white sm:to-red-50 p-4 sm:p-6 rounded-xl sm:rounded-[2.5rem] shadow-none sm:shadow-xl border border-gray-100 sm:border-red-100">
-    <h3 class="text-xl font-bold bg-gradient-to-r from-gray-800 to-red-600 bg-clip-text text-transparent mb-4">Trending Pekan Ini</h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-bold bg-gradient-to-r from-gray-800 to-red-600 bg-clip-text text-transparent">🔥 Trending Pekan Ini</h3>
+      <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Berdasarkan kunjungan</span>
+    </div>
     <div class="space-y-4">
       {#each trendingArticles.slice(0, 4) as article, index}
-        <article class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
-            <img 
-              src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=80&h=80&fit=crop&crop=center" 
-              alt={article.title}
-              class="w-16 h-16 object-cover rounded-xl shadow-md"
-            />
+        <article class="flex items-start space-x-3 group">
+          <div class="flex-shrink-0 relative">
+            <a href="/{DEFAULT_WEBSITE.slug}/article/{article.id}" class="block">
+              <img 
+                src={article.image} 
+                alt={article.title}
+                class="w-16 h-16 object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform duration-300"
+              />
+              {#if index < 3}
+                <div class="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <span class="text-xs font-bold text-white">#{index + 1}</span>
+                </div>
+              {/if}
+            </a>
           </div>
           <div class="flex-1 min-w-0">
-            <h4 class="text-sm font-semibold text-gray-800 hover:text-red-600 transition-colors cursor-pointer line-clamp-2">
-              <a href={"/" + $page.params.slug + "/article/" + article.id}>{article.title}</a>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {article.category}
+              </span>
+              <span class="text-xs text-gray-400">👁️ {article.visitCount}</span>
+            </div>
+            <h4 class="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors line-clamp-2">
+              <a href="/{DEFAULT_WEBSITE.slug}/article/{article.id}" class="block">
+                {article.title}
+              </a>
             </h4>
-            
           </div>
         </article>
       {/each}
     </div>
+    
+    {#if trendingArticles.length === 0}
+      <div class="text-center py-6">
+        <div class="text-gray-400 text-3xl mb-2">📊</div>
+        <p class="text-gray-500 text-sm">Belum ada artikel trending</p>
+      </div>
+    {/if}
   </div>
 </div>

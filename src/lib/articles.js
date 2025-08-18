@@ -12,7 +12,7 @@ import { supabase } from './supabase';
 export async function getArticlesByCategory(websiteId, category, limit = 10, offset = 0, sortByVisit = false) {
   let query = supabase
     .from('articles')
-    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at, visit_count')
+    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at, visit_count, tags, labels')
     .eq('website_id', websiteId)
     .eq('is_published', true);
     
@@ -130,7 +130,7 @@ export async function incrementArticleVisit(id) {
 export async function getRelatedArticles(websiteId, category, currentArticleId, limit = 4) {
   const { data, error } = await supabase
     .from('articles')
-    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at')
+    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at, tags, labels')
     .eq('website_id', websiteId)
     .eq('category', category)
     .eq('is_published', true)
@@ -155,7 +155,7 @@ export async function getRelatedArticles(websiteId, category, currentArticleId, 
 export async function getLatestArticles(websiteId, limit = 6) {
   const { data, error } = await supabase
     .from('articles')
-    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at')
+    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at, tags, labels')
     .eq('website_id', websiteId)
     .eq('is_published', true)
     .order('published_at', { ascending: false })
@@ -203,7 +203,7 @@ export async function searchArticles(websiteId, query, limit = 10) {
   // Ini adalah implementasi sederhana dengan ILIKE
   const { data, error } = await supabase
     .from('articles')
-    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at')
+    .select('id, title, slug, author, minute_read, category, thumbnail_image, summary, published_at, tags, labels')
     .eq('website_id', websiteId)
     .eq('is_published', true)
     .or(`title.ilike.%${query}%, summary.ilike.%${query}%`)

@@ -1,4 +1,6 @@
 <script>
+  import ArticleLabels from './ArticleLabels.svelte';
+  
   export let article = {
     id: '',
     title: '',
@@ -6,7 +8,9 @@
     image: '',
     category: '',
     author: '',
-    date: ''
+    date: '',
+    tags: [],
+    labels: []
   };
 
   export let websiteSlug = '';
@@ -18,6 +22,10 @@
     <div class="md:w-1/3 relative group flex-shrink-0 h-44 md:h-full">
       <a href="/{websiteSlug}/article/{article.id}" class="block h-full">
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+        
+        <!-- Labels di thumbnail -->
+        <ArticleLabels labels={article.labels || []} />
+        
         <img 
           src={article.image} 
           alt={article.title}

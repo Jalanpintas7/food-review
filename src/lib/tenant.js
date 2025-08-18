@@ -1,79 +1,48 @@
 import { supabase } from './supabase';
 
-// Default website untuk Kelantan Food Review
+// Default website untuk Kelantan Food Review - hardcode saja
 export const DEFAULT_WEBSITE = {
   id: 1,
   name: 'Kelantan Food Review',
-  slug: 'kelantan-food-review'
+  slug: 'kelantan-food-review',
+  description: 'Platform review makanan terbaik di Kelantan'
 };
 
 /**
  * Mendapatkan informasi website berdasarkan ID
  * @param {number} id - ID website
- * @returns {Promise<Object|null>} - Informasi website atau null jika tidak ditemukan
+ * @returns {Object} - Informasi website (hardcode)
  */
-export async function getWebsiteById(id = DEFAULT_WEBSITE.id) {
-  const { data, error } = await supabase
-    .from('websites')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    console.error('Error fetching website:', error);
-    return null;
-  }
-
-  return data;
+export function getWebsiteById(id = DEFAULT_WEBSITE.id) {
+  // Hardcode saja, tidak perlu query database
+  return DEFAULT_WEBSITE;
 }
 
 /**
  * Mendapatkan informasi website berdasarkan slug
  * @param {string} slug - Slug website dari URL
- * @returns {Promise<Object|null>} - Informasi website atau null jika tidak ditemukan
+ * @returns {Object} - Informasi website (hardcode)
  */
-export async function getWebsiteBySlug(slug) {
-  // Jika tidak ada slug, kembalikan website default
-  if (!slug) return DEFAULT_WEBSITE;
-
-  const { data, error } = await supabase
-    .from('websites')
-    .select('*')
-    .eq('slug', slug)
-    .single();
-
-  if (error) {
-    console.error('Error fetching website:', error);
-    return DEFAULT_WEBSITE;
-  }
-
-  return data;
+export function getWebsiteBySlug(slug) {
+  // Hardcode saja, tidak perlu query database
+  return DEFAULT_WEBSITE;
 }
 
 /**
  * Mendapatkan semua website yang terdaftar
- * @returns {Promise<Array>} - Array berisi informasi semua website
+ * @returns {Array} - Array berisi website default saja
  */
-export async function getAllWebsites() {
-  const { data, error } = await supabase
-    .from('websites')
-    .select('*')
-    .order('name');
-
-  if (error) {
-    console.error('Error fetching websites:', error);
-    return [];
-  }
-
-  return data;
+export function getAllWebsites() {
+  // Hardcode saja, tidak perlu query database
+  return [DEFAULT_WEBSITE];
 }
 
 /**
  * Mendapatkan context website dari path URL
  * @param {string} path - Full path URL (e.g., "/kelantan-food-review/about")
- * @returns {Promise<Object>} - Website context dan clean path
+ * @returns {Object} - Website context dan clean path
  */
-export async function getWebsiteContext(path) {
+export function getWebsiteContext(path) {
   // Hapus leading slash jika ada
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
   
@@ -81,8 +50,8 @@ export async function getWebsiteContext(path) {
   const pathParts = cleanPath.split('/');
   const websiteSlug = pathParts[0];
 
-  // Dapatkan informasi website
-  const website = await getWebsiteBySlug(websiteSlug);
+  // Gunakan website default saja
+  const website = DEFAULT_WEBSITE;
 
   // Path bersih tanpa slug website
   const cleanRoutePath = pathParts.slice(1).join('/');

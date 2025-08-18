@@ -34,7 +34,9 @@
       image: article.thumbnail_image,
       category: article.category,
       slug: article.slug,
-      minute_read: article.minute_read
+      minute_read: article.minute_read,
+      tags: article.tags || [],
+      labels: article.labels || []
     };
   }
   
@@ -150,14 +152,7 @@
         <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-6 md:space-y-8">
           <!-- About Food Section -->
-          <AboutKelantanCard 
-            title="Tentang Kuliner Kelantan"
-            description1="Kelantan dikenal sebagai Pearl of the Orient dan merupakan surga kuliner Malaysia. Makanan di sini adalah perpaduan sempurna dari budaya Melayu, Cina, India, dan Peranakan."
-            description2="Dari street food legendaris hingga restoran fine dining, setiap hidangan memiliki cerita dan cita rasa yang unik yang mencerminkan keragaman budaya Kelantan."
-            tipsTitle="Tips Makan"
-            tipsContent="Coba makanan di pagi hari untuk mendapatkan rasa terbaik. Street food di Kelantan biasanya lebih segar dan lezat di pagi hari."
-            icon="🍽️"
-          />
+          <AboutKelantanCard category="food" />
         </div>
       </div>
     </div>

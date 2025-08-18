@@ -3,6 +3,7 @@
   import NavigationMenu from '$lib/components/NavigationMenu.svelte';
   import TrendingSidebar from '$lib/components/Sidebar.svelte';
   import Footer from '$lib/components/Footer.svelte';
+  import ArticleTags from '$lib/components/ArticleTags.svelte';
   import { addComment, getCommentsByArticle } from '$lib/comments';
 
   /** @type {import('./$types').PageData} */
@@ -195,6 +196,9 @@
                 <span class="text-gray-400 hidden sm:inline">•</span>
                 <span>{article.minute_read} min read</span>
               </div>
+              
+              <!-- Article Tags -->
+              <ArticleTags tags={article.tags || []} />
             </header>
 
             <!-- Main Image -->

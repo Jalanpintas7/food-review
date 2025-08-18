@@ -2,6 +2,8 @@
   import { fly } from 'svelte/transition';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import { DEFAULT_WEBSITE } from '$lib/tenant';
+  import ArticleLabels from './ArticleLabels.svelte';
   
   // State untuk "Read more"
   const articlesPerLoad = 12;
@@ -39,12 +41,13 @@
         title: article.title,
         author: article.author ? `BY ${article.author.toUpperCase()}` : 'BY ADMIN',
         excerpt: article.summary,
-        height: height
+        height: height,
+        labels: article.labels || []
       };
     });
   }
   
-    // Data statis telah dihapus dan diganti dengan data dinamis dari database
+  // Data statis telah dihapus dan diganti dengan data dinamis dari database
 
   // Artikel yang terlihat saat ini
   $: visibleArticles = featuredArticles.slice(0, visibleCount);
@@ -210,6 +213,9 @@
             </span>
           </div>
           
+          <!-- Labels di thumbnail -->
+          <ArticleLabels labels={article.labels || []} />
+          
           <!-- Default Title Overlay (visible when not hovered) -->
           <div class="absolute bottom-0 left-0 right-0 card-overlay">
             <div class="p-4 text-white">
@@ -240,7 +246,7 @@
                         {article.author}
                       </span>
                     </div>
-                    <a href={`/${$page.params.slug}/article/${article.id}`} class="text-white text-xs font-semibold hover:text-red-300 transition-colors duration-300 flex items-center gap-1 group/btn">
+                    <a href="/{DEFAULT_WEBSITE.slug}/article/{article.id}" class="text-white text-xs font-semibold hover:text-red-300 transition-colors duration-300 flex items-center gap-1 group/btn">
                       Baca Selengkapnya
                       <svg class="w-3 h-3 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

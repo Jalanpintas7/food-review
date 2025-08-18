@@ -34,7 +34,9 @@
       image: article.thumbnail_image,
       category: article.category,
       slug: article.slug,
-      minute_read: article.minute_read
+      minute_read: article.minute_read,
+      tags: article.tags || [],
+      labels: article.labels || []
     };
   }
   

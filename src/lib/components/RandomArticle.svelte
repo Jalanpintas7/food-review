@@ -1,6 +1,8 @@
 <script>
   import { onDestroy, onMount, tick } from 'svelte';
   import { page } from '$app/stores';
+  import { DEFAULT_WEBSITE } from '$lib/tenant';
+  import ArticleLabels from './ArticleLabels.svelte';
   
   /** @type {import('./$types').PageData} */
   export let articles = [];
@@ -21,7 +23,8 @@
         category: article.category.toUpperCase(),
         title: article.title,
         author: article.author ? `BY ${article.author.toUpperCase()}` : 'BY ADMIN',
-        excerpt: article.summary
+        excerpt: article.summary,
+        labels: article.labels || []
       };
     });
   }
@@ -29,7 +32,7 @@
   // Data artikel acak (akan diambil dari sini)
   let randomArticles = [];
   
-    // Data statis telah dihapus dan diganti dengan data dinamis dari database
+  // Data statis telah dihapus dan diganti dengan data dinamis dari database
   let scroller;
   let track;
   let groupSize = 0;
@@ -37,7 +40,7 @@
   let secondStart = 0;
   let thirdStart = 0;
   let timer;
-  export let intervalMs = 2000;
+  let scrollSpeed = 1; // Kecepatan scroll (px per frame)
 
   function shuffle(array) {
     const cloned = array.slice();
@@ -50,7 +53,17 @@
 
   function startAutoScroll() {
     stopAutoScroll();
-    timer = setInterval(next, intervalMs);
+    timer = setInterval(() => {
+      if (!scroller) return;
+      
+      // Scroll terus menerus seperti kereta
+      scroller.scrollLeft += scrollSpeed;
+      
+      // Reset scroll position untuk infinite loop
+      if (scroller.scrollLeft >= thirdStart) {
+        scroller.scrollLeft = secondStart;
+      }
+    }, 16); // 60fps untuk scroll yang smooth
   }
 
   function stopAutoScroll() {
@@ -62,8 +75,14 @@
 
   function next() {
     if (!scroller) return;
-    const step = Math.max(240, Math.floor(scroller.clientWidth * 0.8));
+    const step = Math.max(240, Math.floor(scroller.clientWidth * 0.6));
     scroller.scrollBy({ left: step, behavior: 'smooth' });
+  }
+
+  function prev() {
+    if (!scroller) return;
+    const step = Math.max(240, Math.floor(scroller.clientWidth * 0.6));
+    scroller.scrollBy({ left: -step, behavior: 'smooth' });
   }
 
   function handleScroll() {
@@ -93,6 +112,8 @@
     startAutoScroll();
   });
 
+
+
   onDestroy(() => {
     stopAutoScroll();
   });
@@ -105,8 +126,6 @@
   <div
     class="overflow-x-hidden"
     bind:this={scroller}
-    on:mouseenter={stopAutoScroll}
-    on:mouseleave={startAutoScroll}
     role="region"
     aria-label="Carousel artikel acak"
     on:scroll={handleScroll}
@@ -125,6 +144,8 @@
                 {article.category}
               </span>
             </div>
+            <!-- Labels di thumbnail -->
+            <ArticleLabels labels={article.labels || []} />
           </div>
           <div class="p-6">
             <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
@@ -141,9 +162,12 @@
                   {article.author}
                 </span>
               </div>
-              <button class="text-red-600 text-sm font-semibold hover:text-red-700 transition-colors">
+              <a 
+                href="/{DEFAULT_WEBSITE.slug}/article/{article.id}" 
+                class="text-red-600 text-sm font-semibold hover:text-red-700 transition-colors"
+              >
                 Baca Selengkapnya
-              </button>
+              </a>
             </div>
           </div>
         </article>
@@ -151,8 +175,10 @@
     </div>
   </div>
 
-  <div class="mt-8 flex items-center justify-center gap-4">
-    <button class="px-6 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" on:click={() => scroller && scroller.scrollBy({ left: -Math.max(240, Math.floor(scroller.clientWidth * 0.8)), behavior: 'smooth' })}>
+
+
+  <div class="mt-6 flex items-center justify-center gap-4">
+    <button class="px-6 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" on:click={prev}>
       ← Sebelumnya
     </button>
     <button class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" on:click={next}>
