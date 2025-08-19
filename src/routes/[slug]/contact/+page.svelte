@@ -285,6 +285,7 @@
               loading="lazy" 
               referrerpolicy="no-referrer-when-downgrade"
               class="relative z-0"
+              title="Peta lokasi"
             ></iframe>
           </div>
         </div>

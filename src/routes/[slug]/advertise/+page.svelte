@@ -145,16 +145,16 @@
               <h3 class="text-2xl font-bold text-gray-800 mb-6">{advertiseData.contact_info.form.title}</h3>
               <form class="space-y-4">
                 <div>
-                  <label class="block text-gray-700 font-medium mb-2">Nama</label>
-                  <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan nama Anda">
+                  <label for="nama" class="block text-gray-700 font-medium mb-2">Nama</label>
+                  <input id="nama" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan nama Anda">
                 </div>
                 <div>
-                  <label class="block text-gray-700 font-medium mb-2">Email</label>
-                  <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan email Anda">
+                  <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                  <input id="email" type="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Masukkan email Anda">
                 </div>
                 <div>
-                  <label class="block text-gray-700 font-medium mb-2">Pesan</label>
-                  <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Tulis pesan Anda di sini..."></textarea>
+                  <label for="pesan" class="block text-gray-700 font-medium mb-2">Pesan</label>
+                  <textarea id="pesan" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Tulis pesan Anda di sini..."></textarea>
                 </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-3 px-6 rounded-xl hover:from-red-700 hover:to-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg">
                   Kirim Pesan
