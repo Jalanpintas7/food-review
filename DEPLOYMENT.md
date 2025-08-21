@@ -45,12 +45,36 @@ Klik "Deploy site" dan tunggu proses build selesai.
 - Pastikan `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` sudah diset
 - Restart deploy setelah menambah environment variables
 
-### Routing Issues
-- File `static/_redirects` sudah dibuat untuk SPA routing
-- Pastikan tidak ada redirects di `netlify.toml`
+### Page Not Found Error (SOLVED ✅)
+**Masalah:** Website menampilkan "Page Not Found" setelah deploy
+
+**Solusi yang sudah diterapkan:**
+1. ✅ File `static/_redirects` sudah dikonfigurasi dengan benar:
+   ```
+   # Handle SvelteKit SSR routing
+   /*    /.netlify/functions/sveltekit-render   200
+   ```
+
+2. ✅ Konfigurasi `svelte.config.js` sudah optimal:
+   ```javascript
+   adapter: adapter({
+     edge: false,
+     split: false
+   })
+   ```
+
+3. ✅ File `netlify.toml` sudah bersih tanpa redirects yang konflik
+
+4. ✅ Build process menghasilkan file `_redirects` yang benar di folder `build/`
+
+**Cara deploy yang benar:**
+- **JANGAN** upload folder `build/` secara manual
+- Gunakan **Git integration** di Netlify
+- Netlify akan otomatis build dan deploy dari source code
 
 ## 📝 Notes
 
 - Project menggunakan `@sveltejs/adapter-netlify` untuk optimal deployment
 - Build output akan berada di folder `build/`
 - Static files (seperti `_redirects`) akan otomatis di-copy ke build output
+- **PENTING:** Gunakan Git integration, bukan manual upload folder build
